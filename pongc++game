@@ -1,20 +1,4 @@
-// Course: CS 10 Summer Session 1 2009
-//
-// First Name:Walid
-// Last Name:Wasifi
-// Login id: wasifiw
-// email address: wwasi001@student.ucr.edu
-//
-// Lecture Section: 001
-// Lab Section: 121
-// TA:Ryan Rusich
-//
-// Assignment: Programming Assignment 8
-//
-// I hereby certify that the code in this file
-// is ENTIRELY my own original work.
-//
-// ===========================================================
+
 
 #include"instinct.h"
 
