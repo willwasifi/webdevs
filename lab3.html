@@ -1,0 +1,800 @@
+<html>
+	<head>
+		<style type="text/css">
+	    	h1   { text-align:center }
+	  		html { height: 100% }
+		    body { height: 100%; margin: 0; padding: 0 }
+	  		#map-canvas1 { height: 100% ; display:block;}
+	  		#map-canvas2 { height: 100% ; display:none;}
+	  		#map-canvas3 {height:100%; display:none;}
+	  		#map-canvas4 {height:100%; display:none;}
+	  		#map-canvas5 {height:100%; display:none;z-index:0;}
+
+	  		#done
+	  			{
+	  			display:none;
+	  			z-index:1;
+	  			 position:absolute;
+				 left:0px;
+				 top:8em;
+				 width:10em;
+				 line-height:3em;
+				 background:#99ccff;
+				 border:1px solid #003366;
+				 white-space:nowrap;
+				 padding:0.5em;
+	  		}
+
+	  		#q2{display: none;}
+	  		#q3{display:none;}
+	  		#q4{display:none;}
+	  		#q5{display: none;}
+	  		#correct{display: none;}
+	  		#wrong{display: none;}
+
+		</style>
+
+		<script type="text/javascript"
+			src="https://maps.googleapis.com/maps/api/js?sensor=false">
+		</script>
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+		<script type="text/javascript">
+		
+
+			var question =1;
+			var onewrong=0;
+			var score=0;
+
+			function doubleClicked(e)
+				{
+					if(question==1)
+					{
+						if(e.latLng.lat()< 34.24040376179416 && e.latLng.lng()>-118.5300350189209 && e.latLng.lat()>34.239911511035736 && e.latLng.lng()<-118.5286295413971 )
+						{
+							//alert("Hi you double-clicked at latitude " + e.latLng.lat() + 
+							//		" and longitude " + e.latLng.lng() + " :-)");
+							init("c");
+							score++;
+						}
+						else
+							init("x");
+					}
+					if(question==2)
+					{
+						if(e.latLng.lat()<34.23844804583564 && e.latLng.lat()>34.23811987135926 && e.latLng.lng()>-118.53137075901031 && e.latLng.lng()<-118.53005111217499)
+						{
+							question2("c");
+							score++;
+						}
+						else
+							question2("x");
+
+					}
+					if(question==3)
+					{
+						if(e.latLng.lat()<34.23837265451506 && e.latLng.lat()>34.23818195852047 && e.latLng.lng()>-118.52879583835602 && e.latLng.lng()<
+							-118.52762639522552)
+						{
+							question3("c");
+							score++;
+						}
+						else
+							question3("x");
+
+					}
+					if(question==4)
+					{
+						if(e.latLng.lat()<34.24059119765326 && e.latLng.lat()>34.23936722020018  && e.latLng.lng()>-118.52514803409576 && e.latLng.lng()<
+							-118.52468132972717)
+						{
+							question4("c");
+							score++;
+						}
+						else
+							question4("x");
+					}
+
+					if(question==5)
+					{
+						
+						if(e.latLng.lat()<34.23874961044276 && e.latLng.lat()>34.238585523952274  && e.latLng.lng()>-118.52878510951996 && e.latLng.lng()<
+							-118.52765321731567)
+						{
+							question5("c");
+							score++;
+						}
+						else
+							question5("x");
+
+					}
+
+					e.preventDefault();
+				}
+
+		
+				
+
+
+			function init(a)
+			    {	
+			   		
+
+	    		   var styles = [
+	    		      {
+			         	featureType: "administrative",
+			         	elementType: "labels",
+			         	stylers: [
+			           	{ visibility: "off" }
+			         	]
+			       },
+				   {
+				      featureType: "road",
+				      elementType: "labels",
+				      stylers: [
+				        { visibility: "off" }
+				      ]
+				    }
+				    ,
+				    {
+						featureType: "poi",
+				    	elementType: "labels",
+				    	stylers: [
+				      	{ visibility: "off" }
+				    	]
+					}
+				  	];
+
+
+				  
+
+				  	var right=document.getElementById("correct");
+				  	var wrong=document.getElementById("wrong");
+
+			    	var styledMap = new google.maps.StyledMapType(styles,
+    				{name: "Styled Map"});
+
+			    	var mapOptions = {
+					    zoom: 18,
+					    navigationControl: false,
+					    mapTypeControl: false,
+					    scaleControl: false,
+					    panControl: false,
+					    streetViewControl: false,
+						disableDoubleClickZoom: true,
+					    draggable: false,
+					    scrollwheel: false,
+					    zoomControl:false,
+					   	
+					    center: new google.maps.LatLng(34.24, -118.53),
+					    //mapTypeId: google.maps.MapTypeId.ROADMAP
+
+					    mapTypeControlOptions: {
+     		 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+    					}
+
+
+				    };
+
+
+		
+				    
+				  	var map = new google.maps.Map(document.getElementById("map-canvas1"), 
+				  							mapOptions);
+
+				  	map.mapTypes.set('map_style', styledMap);
+  					map.setMapTypeId('map_style');
+
+  					google.maps.event.addListener(map, 'dblclick', doubleClicked);
+
+
+
+  					if((a=="x") && question==1){
+  						wrong.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: '#FF0000',
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				      new google.maps.LatLng(34.24040376179416, -118.5300350189209),
+				      new google.maps.LatLng(34.239911511035736, -118.5286295413971 ))
+				  	});
+				  	setTimeout(question2,5000);
+				  	
+  					}
+  					else if(a=="c" && question==1)
+  					{
+  						right.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: "green",
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				      new google.maps.LatLng(34.24040376179416, -118.5300350189209),
+				      new google.maps.LatLng(34.239911511035736, -118.5286295413971 ))
+				  	});
+  					setTimeout(question2,5000);
+  					
+
+
+  					}
+
+
+			    }
+		//====================================================================================================================================
+
+			    function question2(a)
+			    {
+			    	question=2;
+
+			    	var right=document.getElementById("correct");
+				  	var wrong=document.getElementById("wrong");
+				  	right.style.display="none";
+				  	wrong.style.display="none";
+				  	var q1=document.getElementById("q1");
+				  	q1.style.display="none";
+
+				  	var q2=document.getElementById("q2");
+				  	q2.style.display="block";
+
+			    	 var styles = [
+	    		      {
+			         	featureType: "administrative",
+			         	elementType: "labels",
+			         	stylers: [
+			           	{ visibility: "off" }
+			         	]
+			       },
+				   {
+				      featureType: "road",
+				      elementType: "labels",
+				      stylers: [
+				        { visibility: "off" }
+				      ]
+				    }
+				    ,
+				    {
+						featureType: "poi",
+				    	elementType: "labels",
+				    	stylers: [
+				      	{ visibility: "off" }
+				    	]
+					}
+				  	];
+			    	var c=document.getElementById("map-canvas1");
+			    	c.style.display="none";
+			    	var c2=document.getElementById("map-canvas2");
+			    	c2.style.display="block";
+
+
+				  	var right=document.getElementById("correct");
+				  	var wrong=document.getElementById("wrong");
+
+			    	var styledMap = new google.maps.StyledMapType(styles,
+    				{name: "Styled Map"});
+
+			    	var mapOptions = {
+					    zoom: 18,
+					    navigationControl: false,
+					    mapTypeControl: false,
+					    scaleControl: false,
+					    panControl: false,
+					    streetViewControl: false,
+						disableDoubleClickZoom: true,
+					    draggable: false,
+					    scrollwheel: false,
+					   zoomControl:false,
+					   	
+					    center: new google.maps.LatLng(34.239, -118.531),
+					    //mapTypeId: google.maps.MapTypeId.ROADMAP
+
+					    mapTypeControlOptions: {
+     		 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+    					}
+
+
+				    };
+
+
+		
+				    
+				  	var map = new google.maps.Map(document.getElementById("map-canvas2"), 
+				  							mapOptions);
+				  	map.mapTypes.set('map_style', styledMap);
+  					map.setMapTypeId('map_style');
+
+
+  					google.maps.event.addListener(map, 'dblclick', doubleClicked);
+
+
+  					if((a=="x") && question==2){
+  						wrong.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: '#FF0000',
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				  new google.maps.LatLng(34.23844804583564, -118.53137075901031),
+				      new google.maps.LatLng(34.23811987135926, -118.53005111217499))
+				  	});
+				  	setTimeout(question3,5000);
+				  	
+  					}
+  					else if(a=="c" && question==2)
+  					{
+
+  						right.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: "green",
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				       new google.maps.LatLng(34.23844804583564, -118.53137075901031),
+				      new google.maps.LatLng(34.23811987135926, -118.53005111217499))
+				  	});
+  					setTimeout(question3,5000);
+
+
+  					}
+
+
+
+			    }
+
+		//========================================================================================================================================
+
+		function question3(a)
+		{
+			question=3;
+			var can=document.getElementById("map-canvas2");
+			can.style.display="none";
+			var cann=document.getElementById("map-canvas3");
+			cann.style.display="block";
+
+	    	var right=document.getElementById("correct");
+		  	var wrong=document.getElementById("wrong");
+		  	right.style.display="none";
+		  	wrong.style.display="none";
+		  	var q2=document.getElementById("q2");
+		  	q2.style.display="none";
+		  	var q3=document.getElementById("q3");
+		  	q3.style.display="block";
+
+		  	 var styles = [
+	    		      {
+			         	featureType: "administrative",
+			         	elementType: "labels",
+			         	stylers: [
+			           	{ visibility: "off" }
+			         	]
+			       },
+				   {
+				      featureType: "road",
+				      elementType: "labels",
+				      stylers: [
+				        { visibility: "off" }
+				      ]
+				    }
+				    ,
+				    {
+						featureType: "poi",
+				    	elementType: "labels",
+				    	stylers: [
+				      	{ visibility: "off" }
+				    	]
+					}
+				  	];
+			    	
+
+
+
+			    	var styledMap = new google.maps.StyledMapType(styles,
+    				{name: "Styled Map"});
+
+			    	var mapOptions = {
+					    zoom: 18,
+					    navigationControl: false,
+					    mapTypeControl: false,
+					    scaleControl: false,
+					    panControl: false,
+					    streetViewControl: false,
+						disableDoubleClickZoom: true,
+					    draggable: false,
+					    scrollwheel: false,
+					    zoomControl:false,
+					   	
+					    center: new google.maps.LatLng(34.239, -118.529),
+					    //mapTypeId: google.maps.MapTypeId.ROADMAP
+
+					    mapTypeControlOptions: {
+     		 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+    					}
+
+
+				    };
+
+
+		
+				    
+				  	var map = new google.maps.Map(document.getElementById("map-canvas3"), 
+				  							mapOptions);
+				  	map.mapTypes.set('map_style', styledMap);
+  					map.setMapTypeId('map_style');
+
+  					google.maps.event.addListener(map, 'dblclick', doubleClicked);
+
+
+  					if((a=="x") && question==3){
+  						wrong.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: '#FF0000',
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				      new google.maps.LatLng(34.23837265451506, -118.52879583835602),
+				      new google.maps.LatLng(34.23818195852047, -118.52762639522552))
+				  	});
+				  	setTimeout(question4,5000);
+				  	
+  					}
+  					else if(a=="c" && question==3)
+  					{
+
+  						right.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: "green",
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				         new google.maps.LatLng(34.23837265451506, -118.52879583835602),
+				      new google.maps.LatLng(34.23818195852047, -118.52762639522552))
+				  	});
+  					setTimeout(question4,5000);
+
+
+  					}
+
+		}
+					 
+		//==========================================================================================================================
+		//==========================================================================================================================
+
+
+		function question4(a)
+		{
+			question=4;
+			var can=document.getElementById("map-canvas3");
+			can.style.display="none";
+			var cann=document.getElementById("map-canvas4");
+			cann.style.display="block";
+
+	    	var right=document.getElementById("correct");
+		  	var wrong=document.getElementById("wrong");
+		  	right.style.display="none";
+		  	wrong.style.display="none";
+		  	var q3=document.getElementById("q3");
+		  	q3.style.display="none";
+		  	var q4=document.getElementById("q4");
+		  	q4.style.display="block";
+
+
+		  	 var styles = [
+	    		      {
+			         	featureType: "administrative",
+			         	elementType: "labels",
+			         	stylers: [
+			           	{ visibility: "off" }
+			         	]
+			       },
+				   {
+				      featureType: "road",
+				      elementType: "labels",
+				      stylers: [
+				        { visibility: "off" }
+				      ]
+				    }
+				    ,
+				    {
+						featureType: "poi",
+				    	elementType: "labels",
+				    	stylers: [
+				      	{ visibility: "off" }
+				    	]
+					}
+				  	];
+			    	
+
+
+
+			    	var styledMap = new google.maps.StyledMapType(styles,
+    				{name: "Styled Map"});
+
+			    	var mapOptions = {
+					    zoom: 18,
+					    navigationControl: false,
+					    mapTypeControl: false,
+					    scaleControl: false,
+					    panControl: false,
+					    streetViewControl: false,
+						disableDoubleClickZoom: true,
+					    draggable: false,
+					    scrollwheel: false,
+					    zoomControl:false,
+					   	
+					    center: new google.maps.LatLng(34.240593125116185, -118.52669298648834),
+					    //mapTypeId: google.maps.MapTypeId.ROADMAP
+
+					    mapTypeControlOptions: {
+     		 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+    					}
+
+
+				    };
+
+
+		
+				    
+				  	var map = new google.maps.Map(document.getElementById("map-canvas4"), 
+				  							mapOptions);
+				  	map.mapTypes.set('map_style', styledMap);
+  					map.setMapTypeId('map_style');
+
+  					google.maps.event.addListener(map, 'dblclick', doubleClicked);
+
+
+  					if((a=="x") && question==4){
+  						wrong.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: '#FF0000',
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				      new google.maps.LatLng(34.24059119765326, -118.52514803409576),
+				      new google.maps.LatLng(34.23936722020018, -118.52468132972717))
+				  	});
+				  	setTimeout(question5,5000);
+				  	
+  					}
+  					else if(a=="c" && question==4)
+  					{
+
+  						right.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: "green",
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				      new google.maps.LatLng(34.24059119765326, -118.52514803409576),
+				      new google.maps.LatLng(34.23936722020018, -118.52468132972717))
+				  	});
+  					setTimeout(question5,5000);
+
+
+  					}
+
+		}
+		//========================================================================================================================
+		//=========================================================================================================================
+		function question5(a)
+		{
+
+
+			question=5;
+			var can=document.getElementById("map-canvas4");
+			can.style.display="none";
+			var cann=document.getElementById("map-canvas5");
+			cann.style.display="block";
+
+	    	var right=document.getElementById("correct");
+		  	var wrong=document.getElementById("wrong");
+		  	right.style.display="none";
+		  	wrong.style.display="none";
+		  	var q4=document.getElementById("q4");
+		  	q4.style.display="none";
+		  	var q5=document.getElementById("q5");
+		  	q5.style.display="block";
+
+
+
+		  	var styles = [
+	    		      {
+			         	featureType: "administrative",
+			         	elementType: "labels",
+			         	stylers: [
+			           	{ visibility: "off" }
+			         	]
+			       },
+				   {
+				      featureType: "road",
+				      elementType: "labels",
+				      stylers: [
+				        { visibility: "off" }
+				      ]
+				    }
+				    ,
+				    {
+						featureType: "poi",
+				    	elementType: "labels",
+				    	stylers: [
+				      	{ visibility: "off" }
+				    	]
+					}
+				  	];
+			    	
+
+
+
+			    	var styledMap = new google.maps.StyledMapType(styles,
+    				{name: "Styled Map"});
+
+			    	var mapOptions = {
+					    zoom: 18,
+					    navigationControl: false,
+					    mapTypeControl: false,
+					    scaleControl: false,
+					    panControl: false,
+					    streetViewControl: false,
+						disableDoubleClickZoom: true,
+					    draggable: false,
+					    scrollwheel: false,
+					    zoomControl:false,
+					   	
+					    center: new google.maps.LatLng(34.239, -118.529),
+					    //mapTypeId: google.maps.MapTypeId.ROADMAP
+
+					    mapTypeControlOptions: {
+     		 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+    					}
+
+
+				    };
+
+
+		
+				    
+				  	var map = new google.maps.Map(document.getElementById("map-canvas5"), 
+				  							mapOptions);
+				  	map.mapTypes.set('map_style', styledMap);
+  					map.setMapTypeId('map_style');
+
+  					google.maps.event.addListener(map, 'dblclick', doubleClicked);
+
+
+  					if((a=="x") && question==5){
+  						wrong.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: '#FF0000',
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				      new google.maps.LatLng(34.23874961044276, -118.52878510951996),
+				      new google.maps.LatLng(34.238585523952274, -118.52765321731567))
+				  	});
+				  	setTimeout(finished,2000);
+				  	
+  					}
+  					else if(a=="c" && question==5)
+  					{
+
+  						right.style.display="block";
+  					var rectangle = new google.maps.Rectangle({
+  						
+				    strokeColor: "green",
+
+				   // strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: false,//'#FF0000',
+				    //fillOpacity: 0.35,
+				    map: map,
+				    bounds: new google.maps.LatLngBounds(
+				      new google.maps.LatLng(34.23874961044276, -118.52878510951996),
+				      new google.maps.LatLng(34.238585523952274, -118.52765321731567))
+				  	});
+  					setTimeout(finished,2000);
+
+
+  					}
+		}
+
+	
+			function finished()
+			{
+				//var cann=document.getElementById("map-canvas5");
+				//cann.style.display="none";
+
+				var sc=document.getElementById("score");
+				sc.innerHTML=score;
+
+				var done=document.getElementById("done");
+				done.style.display="block";
+				done.style.left = '0px';
+				rec();
+
+				function rec(){
+				done.style.left = parseInt(done.style.left)+1+'px';
+  				setTimeout(rec,20); // call rec in 20msec
+  			}
+
+			}
+
+
+			window.addEventListener("load", init, false); 
+		</script>
+
+	
+
+	</head>
+
+	<body>
+		<h1>CSUN Campus</h1>
+
+		<p>
+		<span id="q1"> Where is the Oviatt Library? </span>
+		<span id="q2"> Where is Sierra Hall? </span>
+		<span id="q3"> Where is Live Oak Hall? </span>
+		<span id="q4"> Where is the SRC? </span>
+		<span id="q5"> Where is Eucalyptus Hall? </span>
+		<span id="correct"> <b> Correct! </b> </span>
+		<span id="wrong"> <b>Wrong!</b> </span>
+		<div id="done">
+			Score: <span id="score"></span>
+
+			out of 5
+
+		</div>
+  		<div id="map-canvas1"></div>
+  		<div id="map-canvas2"></div>
+  		<div id="map-canvas3"></div>
+  		<div id="map-canvas4"></div>
+  		<div id="map-canvas5"></div>
+	</body>
+
+
+
+</html>
