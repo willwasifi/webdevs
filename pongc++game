@@ -1,0 +1,387 @@
+// Course: CS 10 Summer Session 1 2009
+//
+// First Name:Walid
+// Last Name:Wasifi
+// Login id: wasifiw
+// email address: wwasi001@student.ucr.edu
+//
+// Lecture Section: 001
+// Lab Section: 121
+// TA:Ryan Rusich
+//
+// Assignment: Programming Assignment 8
+//
+// I hereby certify that the code in this file
+// is ENTIRELY my own original work.
+//
+// ===========================================================
+
+#include"instinct.h"
+
+using namespace std;
+
+
+// Paddle function
+
+Rect p(Rect& paddle,double pad_movement,double x_lwall,double x_rwall,
+       string l, string r)
+{
+  if(win.is_key_down(l)==true)
+    {
+      if(paddle.get_lower_left().get_x() - x_lwall <= pad_movement)
+	{paddle.get_lower_left().set_x(0.0);}
+      else	
+	{ 	
+	 	
+	  paddle.move(-pad_movement,0);
+	  
+	}
+      
+    }
+  if(win.is_key_down(r)==true)
+    {
+      if(paddle.get_lower_left().get_x() + paddle.get_width() >= x_rwall)
+	{paddle.get_lower_left().set_x( x_rwall - paddle.get_width());}
+      else
+	{ 
+     
+	  paddle.move(pad_movement,0);
+	  
+	}
+    }
+  return paddle;
+}
+
+    
+bool Rectangle_Collision (Rect paddle,Circle& ball, double& ball_move_x, 
+			  double& ball_move_y)
+
+{
+ 
+  // Bouncing algorithms
+
+  if(ball.get_center().get_y()-ball.get_radius()<=
+     paddle.get_lower_left().get_y()+ paddle.get_height() && 
+     ball.get_center().get_y()+ball.get_radius()
+     >= paddle.get_lower_left().get_y() && ball.get_center().get_x()-
+     ball.get_radius() <= paddle.get_lower_left().get_x()+paddle.get_width()
+     && ball.get_center().get_x()+ball.get_radius()>=
+     paddle.get_lower_left().get_x())
+    {if(ball.get_center().get_x()>=paddle.get_lower_left().get_x()
+	&& ball.get_center().get_x()<=paddle.get_lower_left().get_x()+
+	paddle.get_width())
+      {
+	ball_move_x = ball_move_x;
+	ball_move_y = -ball_move_y;
+      }
+      else if(ball.get_center().get_x()<paddle.get_lower_left().get_x())
+	{
+	  ball_move_x = -ball_move_x;
+	  ball_move_y = ball_move_y;
+	}
+      else
+	{
+	ball_move_x=ball_move_x;
+	ball_move_y = ball_move_y;
+	}return true;
+    }
+  else{return false;}
+}
+ 
+
+
+  
+void Wall_Collision(Circle& ball,double min_value,double max_value,
+		    double left_wall_place,double right_wall_place,
+		    double& ball_move_x,double& ball_move_y)
+  
+  
+{
+
+  if (ball.get_center().get_y()>= max_value 
+      && ball.get_center().get_x()< right_wall_place)
+    {
+      ball_move_x = ball_move_x;
+      ball_move_y = -ball_move_y;
+    }
+  else if(ball.get_center().get_x()+ball.get_radius() >= right_wall_place && 
+	  ball.get_center().get_y() > min_value &&
+	  ball.get_center().get_y() < max_value)
+    {
+      ball_move_x = -ball_move_x;
+      ball_move_y = ball_move_y;
+    }
+  
+  else if(ball.get_center().get_x() < right_wall_place &&
+	  ball.get_center().get_y() < max_value &&
+	  ball.get_center().get_x()-ball.get_radius() <= left_wall_place)
+    {
+      ball_move_x = -ball_move_x;
+      ball_move_y = ball_move_y;
+    }
+  
+  else if(ball.get_center().get_x() >= right_wall_place &&
+	  ball.get_center().get_y() <= max_value &&
+	  ball.get_center().get_y() > min_value)
+    {
+      ball_move_x= ball_move_x;
+      ball_move_y= ball_move_y;
+    }
+  
+  
+  
+}
+
+void Fall_Through(Circle& ball,double min_value,double& ball_move_x,
+		  double& ball_move_y,double fake_x,double fake_y,
+		  Point ball_center_point,int& ball_count,
+		  Message& number_of_balls,Message& balls,double ball_radius)
+		  
+		  
+{
+ 
+  if(ball.get_center().get_y()-ball.get_radius() <= min_value)
+    {
+      // ball_move_x = ball_move_x;
+      // ball_move_y = -ball_move_y;
+      ball_count--;
+      win << number_of_balls;
+      ball.set_center(ball_center_point);
+      ball_move_x = fake_x;
+      ball_move_y = fake_y;
+      win << ball;
+      
+	
+      win.output_buffer();
+    
+    }
+  win << balls << number_of_balls;
+}
+
+
+// Drawing the bricks
+
+void Draw_Bricks(const vector<Rect>& bricks)
+{
+  for(int i = 0; i < bricks.size(); i++)
+    {
+      win <<  bricks[i];
+    }
+}
+
+// Initializing the bricks
+
+void Initialize_Bricks(vector<Rect>& bricks,Point start,int rows,int cols,
+		       double brick_width,double brick_height,
+		       double horiz_gap,double vert_gap)
+{ 
+  for(int i = 0; i < rows; i++)
+    {
+      Rect brick = Rect(start,brick_width,brick_height,RED,true);
+      brick.move(0, i * (vert_gap + brick_height));
+
+      for(int c = 0; c < cols; c++)
+	{
+	  bricks.push_back(brick);
+	  brick.move((horiz_gap + brick_width),0);
+	 
+	}
+    }
+}  
+
+
+
+void Bricks_Collision(vector<Rect>& bricks,Circle& ball_2, 
+		      double& ball_move_x_slow, double& ball_move_y_slow)
+{
+  for(int x=0; x < bricks.size();x++)
+    {
+      if (Rectangle_Collision(bricks[x],ball_2,ball_move_x_slow,
+			      ball_move_y_slow))
+      
+	{ 
+	  int last_brick = bricks.size()-1;
+	  bricks[x] = bricks[last_brick];
+	  bricks.pop_back();
+	}  
+    }
+
+
+}
+    
+
+
+int instinct_main()
+{
+  win.coord(0,0,20,20);
+  // Ball's x and y movement amounts
+
+  double ball_move_x = .156;
+  double ball_move_y = -.3;
+
+  // Top wall's points FOLLOWING POINTS ARE
+  // COORDINATES SUBTRACTED BY BALL'S RADIUS!!
+  Point top_wall(19.78,19.78);
+  
+  // Right wall's points
+  //  Point right_wall(19.78,.22);
+  
+  // Left wall's points
+  // Point left_wall(.22,19.78);
+
+  // Bottom wall's points
+  Point bottom_wall(.22,.22);
+
+  // Info on walls
+  double max_value = 19.78;
+  double min_value = .22; 
+
+  // middle of the screen
+  double middle_screen = 10;
+
+  // Ball's center point
+  Point ball_center_point(5,10);
+  
+  // ball radius
+  double ball_radius = .22;
+  
+  Point ball_center(5,10);
+  Circle ball(ball_center,.22,BLACK,true);
+  
+  // Move ball
+  int delay_time = 65;
+
+  // Location of exit message
+  Point mess(.5,.5);
+
+  // Number of balls
+  int ball_count = 6;
+  
+  // Location of ball message
+  Point ball_message_loc(1,18);
+    
+  // Location of number of balls message
+  Point ball_count_message(5,18);
+ 
+  // Paddle 1
+  Point paddle_loc(5,1.25);
+  Rect paddle(paddle_loc,1.5,.3);  
+
+  // Paddle 2
+  Point paddle_loc_2(10,1.25);
+  Rect paddle_2(paddle_loc_2,2.5,.3,BLUE,true);
+
+  // Ball 2
+  Point ball_center_2(10,10);
+  Circle ball_2(ball_center_2,ball_radius,BLACK,true);
+
+  double left_wall = 0.22;
+  double right_wall = 19.78;
+  
+  Point left_wall_pt(0,0);
+  
+  double fake_x_speed = .15;
+  double fake_y_speed = -.25;
+
+  Point split_top(10,20);
+  Point split_bottom(10,0);
+  Line split_screen(split_bottom,split_top);
+  
+  Point ball_message_loc_2(15,.5);
+  Message number_of_balls(ball_message_loc,"Balls left: ");
+ 
+  Message balls_left_2(ball_message_loc_2,"Balls left: ");
+  
+  Message balls(ball_count_message,ball_count);
+
+  int ball_count_2 = 6;
+  Point ball_count_message_2(19,.5);
+  Message balls_2(ball_count_message_2,ball_count_2);
+  
+
+  double ball_move_x_slow = .15;
+  double ball_move_y_slow = -.25;
+  double fake_x_2 = ball_move_x_slow;
+  double fake_y_2 = ball_move_y_slow;
+  
+  // parameters for sides. subtracted for precise output
+  
+  double r_mid_wall = 9.78;
+  double r_wall_far = 19.78;
+ 
+
+  vector<Rect>bricks;
+  Point start_bricks(1,17.5);
+
+  Timer slowdown;
+  slowdown.start();
+
+  Initialize_Bricks(bricks,start_bricks,4,9,1.8,.4,0.2,0.2);
+
+
+  while(win.is_key_down("esc")==false && ball_count>0 && ball_count_2 > 0)
+    {     
+      balls_2 = Message(ball_count_message_2,ball_count_2);
+      
+      
+      Rectangle_Collision(paddle_2,ball_2,ball_move_x_slow,ball_move_y_slow);
+      
+      Wall_Collision(ball_2,min_value,max_value,min_value,
+		     split_top.get_y(),ball_move_x_slow,ball_move_y_slow);
+      
+      Fall_Through(ball_2,min_value,ball_move_x_slow,ball_move_y_slow,
+		   fake_x_2,fake_y_2,ball_center_2,ball_count_2,
+		   balls_left_2,balls_2,ball_radius);
+
+      Draw_Bricks(bricks);
+     
+      Bricks_Collision(bricks,ball_2,ball_move_x_slow,ball_move_y_slow);
+      Message exit(mess,"Press Esc key to exit");
+      win << exit;
+      
+      // Player 2
+      p(paddle_2,.3,left_wall_pt.get_x(),max_value,"left","right");
+      win << paddle_2 << ball_2;
+
+      if (bricks.size()==0)
+	{break;}
+      win.output_buffer();
+      wait_for(delay_time);
+      while (!slowdown.has_passed(delay_time));
+      slowdown.reset();
+      ball_2.move(ball_move_x_slow,ball_move_y_slow);
+      win.clear_buffer();   
+    }
+  
+  Point outcome(7.3,10);
+  
+  if(bricks.size()==0)
+    {
+      win.clear_buffer();
+      Message winner(outcome,"YOU WIN!");
+      win << winner;
+      win.output_buffer();
+    }
+
+  if(ball_count_2 == 0)
+    {
+      win.clear_buffer();
+      Message computerwins(outcome,"COMPUTER WINS");
+      win << computerwins;
+      win.output_buffer();
+    }
+  
+
+  if (win.is_key_down("esc")==true)
+    {win.clear_buffer();
+      // Game over message location
+      
+      Point game_over_loc(8.5,10);
+	
+      Message game_over(game_over_loc,"GAME OVER!");
+      win << game_over;
+      win.output_buffer();
+    }
+  
+  return 0;
+}
